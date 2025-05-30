@@ -15,11 +15,6 @@
     body {
       font-family: 'Orbitron', sans-serif;
       background-color: black;
-      background-image: url('sfondo.png');
-      background-position: center center;
-      background-repeat: no-repeat;
-      background-attachment: fixed;
-      background-size: contain;
       color: #ff0000;
       height: 100vh;
       display: flex;
@@ -32,6 +27,53 @@
       position: relative;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url('sfondo.png');
+      background-size: cover;
+      background-position: center;
+      filter: blur(20px) brightness(0.4);
+      z-index: -2;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image: url('sfondo.png');
+      background-repeat: no-repeat;
+      background-position: center;
+      background-size: contain;
+      z-index: -1;
+    }
+
+    @media (max-width: 768px) {
+      body::before {
+        display: none;
+      }
+
+      body::after {
+        background-size: contain;
+        filter: none;
+      }
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      animation: flamePulse 1.5s infinite alternate;
+      z-index: 1;
+    }
+
+    #countdown {
+      font-size: 2rem;
+      letter-spacing: 2px;
+      animation: flameGlow 1s ease-in-out infinite alternate;
+      z-index: 1;
+    }
+
     #overlay {
       position: absolute;
       inset: 0;
@@ -39,45 +81,15 @@
       z-index: 0;
     }
 
-    canvas#flames {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      height: 150px;
-      z-index: 0;
-      pointer-events: none;
-    }
-
-    .content {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 20px;
-      padding-bottom: 10px;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      animation: pulse 2s infinite;
-    }
-
-    #countdown {
-      font-size: 2rem;
-      letter-spacing: 2px;
-      animation: glow 1s ease-in-out infinite alternate;
-    }
-
-    @keyframes glow {
+    @keyframes flameGlow {
       from { text-shadow: 0 0 10px #f00, 0 0 20px #ff6600; }
       to { text-shadow: 0 0 20px #ff6600, 0 0 40px #ffff00; }
     }
 
-    @keyframes pulse {
-      0% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-      100% { transform: scale(1); }
+    @keyframes flamePulse {
+      0% { transform: scale(1); text-shadow: 0 0 10px #f00; }
+      50% { transform: scale(1.1); text-shadow: 0 0 20px #ff6600, 0 0 30px #ffff00; }
+      100% { transform: scale(1); text-shadow: 0 0 10px #f00; }
     }
 
     .explosion {
@@ -95,17 +107,19 @@
 
     #playAudio {
       display: none;
+      margin-top: 20px;
       padding: 10px 20px;
       background-color: #111;
-      color: #ff3300;
-      border: 2px solid #ff6600;
+      color: #ff0000;
+      border: 2px solid #ff0000;
       font-size: 1rem;
       cursor: pointer;
-      text-shadow: 0 0 10px #f00, 0 0 20px #ff6600;
+      text-shadow: 0 0 10px #f00;
+      z-index: 1;
     }
 
     #playAudio:hover {
-      background-color: #ff6600;
+      background-color: #ff0000;
       color: #111;
     }
 
@@ -117,13 +131,12 @@
 </head>
 <body>
   <div id="overlay"></div>
-  <canvas id="flames"></canvas>
 
-  <div class="content">
+  <div>
     <h1>Sara & Fedo</h1>
     <div id="countdown">Caricamento...</div>
     <button id="playAudio">🔊 Attiva audio tamarro</button>
-    <audio id="bg-audio" src="explosion.mp3" loop muted></audio>
+    <audio id="bg-audio" src="explosion.mp3" autoplay loop></audio>
   </div>
 
   <script>
@@ -132,16 +145,12 @@
     const bgAudio = document.getElementById("bg-audio");
     const playButton = document.getElementById("playAudio");
 
-    function pad(n) {
-      return String(n).padStart(2, '0');
-    }
-
     function updateCountdown() {
       const now = new Date().getTime();
       const diff = targetDate - now;
 
       if (diff <= 0) {
-        countdownEl.classList.remove("glow");
+        countdownEl.classList.remove("flameGlow");
         countdownEl.classList.add("explosion");
         countdownEl.innerHTML = "BOOM 💥";
         clearInterval(interval);
@@ -153,13 +162,12 @@
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      countdownEl.innerHTML = `${days}g ${pad(hours)}h ${pad(minutes)}m ${pad(seconds)}s`;
+      countdownEl.innerHTML = `${days}g ${hours}h ${minutes}m ${seconds}s`;
     }
 
     const interval = setInterval(updateCountdown, 1000);
     updateCountdown();
 
-    bgAudio.muted = false;
     bgAudio.play().catch(() => {
       playButton.style.display = "inline-block";
     });
@@ -168,60 +176,6 @@
       bgAudio.play();
       playButton.style.display = "none";
     });
-
-    // 🔥 Flame animation
-    const canvas = document.getElementById('flames');
-    const ctx = canvas.getContext('2d');
-    let width, height, particles;
-
-    function init() {
-      width = canvas.width = window.innerWidth;
-      height = canvas.height = 150;
-      particles = [];
-
-      for (let i = 0; i < 100; i++) {
-        particles.push({
-          x: Math.random() * width,
-          y: height,
-          speed: 0.5 + Math.random() * 1,
-          radius: 2 + Math.random() * 3,
-          alpha: 1,
-          life: Math.random() * 60 + 60
-        });
-      }
-    }
-
-    function draw() {
-      ctx.clearRect(0, 0, width, height);
-      particles.forEach(p => {
-        p.y -= p.speed;
-        p.alpha -= 0.01;
-        p.life--;
-
-        if (p.life <= 0 || p.alpha <= 0) {
-          p.x = Math.random() * width;
-          p.y = height;
-          p.alpha = 1;
-          p.life = Math.random() * 60 + 60;
-        }
-
-        const gradient = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.radius);
-        gradient.addColorStop(0, `rgba(255,255,0,${p.alpha})`);
-        gradient.addColorStop(0.5, `rgba(255,100,0,${p.alpha})`);
-        gradient.addColorStop(1, `rgba(255,0,0,0)`);
-
-        ctx.beginPath();
-        ctx.fillStyle = gradient;
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      requestAnimationFrame(draw);
-    }
-
-    window.addEventListener('resize', init);
-    init();
-    draw();
   </script>
 </body>
 </html>
