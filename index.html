@@ -14,7 +14,11 @@
 
     body {
       font-family: 'Orbitron', sans-serif;
-      background: black url('sfondo.png') no-repeat center center fixed;
+      background-color: black;
+      background-image: url('sfondo.png');
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       background-size: cover;
       color: #00ff00;
       display: flex;
@@ -41,12 +45,8 @@
     }
 
     @keyframes glow {
-      from {
-        text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
-      }
-      to {
-        text-shadow: 0 0 20px #0f0, 0 0 40px #0f0;
-      }
+      from { text-shadow: 0 0 10px #0f0, 0 0 20px #0f0; }
+      to { text-shadow: 0 0 20px #0f0, 0 0 40px #0f0; }
     }
 
     @keyframes pulse {
@@ -68,6 +68,23 @@
       100% { transform: scale(0); opacity: 0; }
     }
 
+    #playAudio {
+      display: none;
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #111;
+      color: #0f0;
+      border: 2px solid #0f0;
+      font-size: 1rem;
+      cursor: pointer;
+      text-shadow: 0 0 10px #0f0;
+    }
+
+    #playAudio:hover {
+      background-color: #0f0;
+      color: #111;
+    }
+
     @media (max-width: 600px) {
       h1 { font-size: 1.8rem; }
       #countdown { font-size: 1.5rem; }
@@ -75,14 +92,16 @@
   </style>
 </head>
 <body>
-  <h1>Countdown Sara e Fede</h1>
+  <h1>Countdown all'Apocalisse</h1>
   <div id="countdown">Caricamento...</div>
-<audio id="bg-audio" src="explosion.mp3" autoplay loop></audio>
+  <button id="playAudio">🔊 Attiva audio apocalittico</button>
+  <audio id="bg-audio" src="explosion.mp3" autoplay loop></audio>
 
   <script>
     const targetDate = new Date("2025-09-01T00:00:00").getTime();
     const countdownEl = document.getElementById("countdown");
-    const boomAudio = document.getElementById("boom");
+    const bgAudio = document.getElementById("bg-audio");
+    const playButton = document.getElementById("playAudio");
 
     function updateCountdown() {
       const now = new Date().getTime();
@@ -92,7 +111,6 @@
         countdownEl.classList.remove("glow");
         countdownEl.classList.add("explosion");
         countdownEl.innerHTML = "BOOM 💥";
-        boomAudio.play();
         clearInterval(interval);
         return;
       }
@@ -107,6 +125,16 @@
 
     const interval = setInterval(updateCountdown, 1000);
     updateCountdown();
+
+    // Autoplay fallback
+    bgAudio.play().catch(() => {
+      playButton.style.display = "inline-block";
+    });
+
+    playButton.addEventListener("click", () => {
+      bgAudio.play();
+      playButton.style.display = "none";
+    });
   </script>
 </body>
 </html>
