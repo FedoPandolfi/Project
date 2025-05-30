@@ -26,7 +26,7 @@
       position: relative;
     }
 
-    /* Sfondo sfuocato desktop */
+    /* Sfondo replicato e sfuocato solo su desktop */
     @media (min-width: 768px) {
       body::before {
         content: '';
@@ -34,8 +34,8 @@
         inset: 0;
         background-image: url('sfondo.png');
         background-repeat: repeat;
-        background-size: 50%;
-        filter: blur(40px) brightness(0.3);
+        background-size: 40%;
+        filter: blur(40px) brightness(0.4);
         z-index: 0;
       }
     }
@@ -43,7 +43,7 @@
     #overlay {
       position: absolute;
       inset: 0;
-      background: rgba(0, 0, 0, 0.5);
+      background: rgba(0, 0, 0, 0.4);
       z-index: 1;
     }
 
@@ -56,22 +56,19 @@
       justify-content: flex-end;
       height: 100%;
       text-align: center;
-      padding-bottom: 40px;
-      animation: flameGlow 2s infinite alternate;
+      padding: 30px 20px;
     }
 
     h1 {
       font-size: 2.8rem;
       margin-bottom: 20px;
-      color: red;
-      text-shadow: 0 0 20px orange, 0 0 40px yellow;
-      animation: flame 1s infinite;
+      text-shadow: 0 0 10px red, 0 0 20px orange, 0 0 30px yellow;
     }
 
     #countdown {
       font-size: 2rem;
       letter-spacing: 2px;
-      text-shadow: 0 0 10px red, 0 0 20px orange, 0 0 30px yellow;
+      text-shadow: 0 0 10px red, 0 0 20px orange;
       margin-bottom: 30px;
     }
 
@@ -82,17 +79,6 @@
       text-shadow: 0 0 10px red, 0 0 20px orange, 0 0 30px yellow;
     }
 
-    @keyframes flame {
-      0% { text-shadow: 0 0 5px red, 0 0 10px orange; }
-      50% { text-shadow: 0 0 15px red, 0 0 30px yellow; }
-      100% { text-shadow: 0 0 5px red, 0 0 10px orange; }
-    }
-
-    @keyframes flameGlow {
-      from { filter: brightness(1); }
-      to { filter: brightness(1.2); }
-    }
-
     @keyframes explode {
       0% { transform: scale(1); opacity: 1; }
       50% { transform: scale(1.5); opacity: 0.8; }
@@ -100,30 +86,28 @@
     }
 
     #playAudio {
-      background: url('https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif') center center / cover no-repeat;
-      width: 100px;
-      height: 100px;
-      border: none;
-      border-radius: 50%;
+      margin-top: 10px;
+      padding: 10px 20px;
+      background-color: #111;
+      color: red;
+      border: 2px solid red;
+      font-size: 1rem;
       cursor: pointer;
-      animation: flame 1.5s infinite;
-      box-shadow: 0 0 20px red, 0 0 30px orange;
-      margin-bottom: 20px;
-      transition: transform 0.2s;
+      text-shadow: 0 0 10px red;
+      z-index: 2;
+      border-radius: 8px;
+      transition: all 0.2s ease-in-out;
     }
 
     #playAudio:hover {
-      transform: scale(1.1) rotate(2deg);
-      box-shadow: 0 0 30px yellow, 0 0 50px red;
+      background-color: red;
+      color: #111;
+      box-shadow: 0 0 15px red, 0 0 30px orange;
     }
 
     @media (max-width: 600px) {
       h1 { font-size: 2rem; }
       #countdown { font-size: 1.5rem; }
-      #playAudio {
-        width: 80px;
-        height: 80px;
-      }
     }
   </style>
 </head>
@@ -132,7 +116,7 @@
   <div class="content">
     <h1>Sara & Fedo</h1>
     <div id="countdown">Caricamento...</div>
-    <button id="playAudio" title="Attiva audio tamarro 🔊"></button>
+    <button id="playAudio">🔊 Attiva audio tamarro</button>
     <audio id="bg-audio" src="explosion.mp3" autoplay loop></audio>
   </div>
 
@@ -147,7 +131,7 @@
       const diff = targetDate - now;
 
       if (diff <= 0) {
-        countdownEl.classList.remove("flameGlow");
+        countdownEl.classList.remove("glow");
         countdownEl.classList.add("explosion");
         countdownEl.innerHTML = "BOOM 💥";
         clearInterval(interval);
