@@ -3,45 +3,96 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Countdown</title>
+  <title>Countdown Apocalittico</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: sans-serif;
-      background: #111;
-      color: #0f0;
+      font-family: 'Orbitron', sans-serif;
+      background: black url('skulls-bg.gif') no-repeat center center fixed;
+      background-size: cover;
+      color: #00ff00;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       height: 100vh;
-      margin: 0;
+      text-align: center;
+      padding: 20px;
+      overflow: hidden;
+      text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
     }
 
     h1 {
       font-size: 2.5rem;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      animation: pulse 2s infinite;
     }
 
     #countdown {
       font-size: 2rem;
       letter-spacing: 2px;
+      animation: glow 1s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from {
+        text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+      }
+      to {
+        text-shadow: 0 0 20px #0f0, 0 0 40px #0f0;
+      }
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+
+    .explosion {
+      animation: explode 1s forwards;
+      color: red;
+      font-size: 3rem;
+      text-shadow: 0 0 10px red, 0 0 20px orange, 0 0 30px yellow;
+    }
+
+    @keyframes explode {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.5); opacity: 0.8; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+
+    @media (max-width: 600px) {
+      h1 { font-size: 1.8rem; }
+      #countdown { font-size: 1.5rem; }
     }
   </style>
 </head>
 <body>
-  <h1>Countdown al 01 Settembre 2025</h1>
+  <h1>Countdown Sara e Fede</h1>
   <div id="countdown">Caricamento...</div>
+  <audio id="boom" src="explosion.mp3"></audio>
 
   <script>
-    
-    const targetDate = new Date("2025-09-01T11:00:00").getTime();
+    const targetDate = new Date("2025-09-01T00:00:00").getTime();
+    const countdownEl = document.getElementById("countdown");
+    const boomAudio = document.getElementById("boom");
 
     function updateCountdown() {
       const now = new Date().getTime();
       const diff = targetDate - now;
 
       if (diff <= 0) {
-        document.getElementById("countdown").innerHTML = "Tempo scaduto!";
+        countdownEl.classList.remove("glow");
+        countdownEl.classList.add("explosion");
+        countdownEl.innerHTML = "BOOM 💥";
+        boomAudio.play();
         clearInterval(interval);
         return;
       }
@@ -51,12 +102,11 @@
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      document.getElementById("countdown").innerHTML =
-        `${days}g ${hours}h ${minutes}m ${seconds}s`;
+      countdownEl.innerHTML = `${days}g ${hours}h ${minutes}m ${seconds}s`;
     }
 
     const interval = setInterval(updateCountdown, 1000);
-    updateCountdown(); // Esegui subito per evitare 1s di ritardo
+    updateCountdown();
   </script>
 </body>
 </html>
