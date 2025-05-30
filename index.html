@@ -30,18 +30,29 @@
       padding: 20px;
       overflow: hidden;
       text-shadow: 0 0 10px #0f0, 0 0 20px #0f0;
+      position: relative;
+      z-index: 1;
+    }
+
+    #overlay {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.6);
+      z-index: 0;
     }
 
     h1 {
       font-size: 2.5rem;
       margin-bottom: 30px;
       animation: pulse 2s infinite;
+      z-index: 1;
     }
 
     #countdown {
       font-size: 2rem;
       letter-spacing: 2px;
       animation: glow 1s ease-in-out infinite alternate;
+      z-index: 1;
     }
 
     @keyframes glow {
@@ -78,6 +89,7 @@
       font-size: 1rem;
       cursor: pointer;
       text-shadow: 0 0 10px #0f0;
+      z-index: 1;
     }
 
     #playAudio:hover {
@@ -92,6 +104,8 @@
   </style>
 </head>
 <body>
+  <div id="overlay"></div>
+
   <h1>Countdown all'Apocalisse</h1>
   <div id="countdown">Caricamento...</div>
   <button id="playAudio">🔊 Attiva audio apocalittico</button>
@@ -109,32 +123,4 @@
 
       if (diff <= 0) {
         countdownEl.classList.remove("glow");
-        countdownEl.classList.add("explosion");
-        countdownEl.innerHTML = "BOOM 💥";
-        clearInterval(interval);
-        return;
-      }
-
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-      countdownEl.innerHTML = `${days}g ${hours}h ${minutes}m ${seconds}s`;
-    }
-
-    const interval = setInterval(updateCountdown, 1000);
-    updateCountdown();
-
-    // Autoplay fallback
-    bgAudio.play().catch(() => {
-      playButton.style.display = "inline-block";
-    });
-
-    playButton.addEventListener("click", () => {
-      bgAudio.play();
-      playButton.style.display = "none";
-    });
-  </script>
-</body>
-</html>
+        coun
